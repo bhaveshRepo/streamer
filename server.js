@@ -3,10 +3,10 @@ require('dotenv').config();
 
 const app = express();
 
-const testRoute = require("./test");
+const user = require("./routes/user");
 const client = require("./database");
 
-app.use("/test", testRoute);
+app.use("/user", user);
 
 let arg_port = process.argv.slice(2);
 let port = process.env.PORT || arg_port[0] || 3000;
@@ -14,7 +14,7 @@ let port = process.env.PORT || arg_port[0] || 3000;
 process.on("SIGINT", async() => {
     try {
         console.log('Closing MongoDB connection');
-        await client.close();
+        await client.close()
         console.log('MongoDB connection closed');
         process.exit(0);
     } catch (err) {
