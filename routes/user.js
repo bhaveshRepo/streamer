@@ -1,7 +1,7 @@
 const route = require('express').Router();
 const multer = require('multer');
 const { check } = require('express-validator');
-const { signUp, signIn } = require('../controller/user');
+const { signUp, signIn, signOut } = require('../controller/user');
 
 const upload = multer({ dest: "uploads/"});
 let signup_validation = [ 
@@ -18,5 +18,6 @@ let signin_validation = [
 
 route.post("/signup", upload.none(), signup_validation, signUp);
 route.post("/signin", upload.none(), signin_validation, signIn);
+route.get("/signout", signOut);
 
 module.exports = route;
