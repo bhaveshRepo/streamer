@@ -3,7 +3,13 @@ const fs = require("fs");
 
 async function play(req, res){
     try {
-        let video_path = "uploads/video1.mp4";
+        let id = req.params.id;
+        let video_list = await fs.promises.readdir('uploads');
+        let video_name = video_list.filter((value, index) => index == id ? value : null);
+        if(!video_name || typeof video_name == "undefined" || video_name == ""){
+            return res.status(200).send({ type: 'error', msg: "Video is currently unavailable"});
+        }
+        let video_path = `uploads/${video_name}`;
         let video_stat = fs.statSync(video_path);
         let fileSize = video_stat.size;
         let range = req.headers.range;
@@ -43,10 +49,18 @@ async function play(req, res){
         console.log(error);
         return res.status(400).send({ type: 'error', msg: "error"});
     }
+
 }
 
-async function play_url(req, res){
-    
+async function video_list(req, res){
+    let data = new Object();
+    let result = await fs.promises.readdir("uploads");
+    for(const item in result){
+        data["id"] = item+1;
+        data['name'] = result[item];
+    }
+
+    return res.status(200).send({ type: "success", msg: "data found", result: data});
 }
 
-module.exports = { play, play_url };
+module.exports = { play, video_list };
