@@ -1,8 +1,17 @@
 const fs = require("fs");
-
+const { io } = require("../server");
 
 async function play(req, res){
     try {
+
+        io.on("connection", (socket) => {
+            console.log(`connection socket: ${socket.id} is created`);
+    
+            socket.on('disconnect', () => {
+                console.log(`Connection socket: ${socket.id} disconnected`);
+            })
+        })
+    
         let id = req.params.id;
         let video_list = await fs.promises.readdir('uploads');
         let video_name = video_list.filter((value, index) => index == id ? value : null);
@@ -47,7 +56,7 @@ async function play(req, res){
         }
     } catch (error) {
         console.log(error);
-        return res.status(400).send({ type: 'error', msg: "error"});
+        return res.status(400).send({ type: 'error', msg: "error"});``
     }
 
 }

@@ -1,18 +1,31 @@
-const express = require('express');
 require('dotenv').config();
+const http = require("http");
+const express = require('express');
 const cookie_parser = require("cookie-parser");
-
 const app = express();
+
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
+module.exports = io;
 
 const user = require("./routes/user");
 const videos = require("./routes/video");
 const client = require("./database");
 
-app.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-origin", "http://localhost:3000");
-    next();
-});
+// app.use((req, res, next) => {
+//     res.setHeader("Access-Control-Allow-origin", "http://localhost:3000");
+//     next();
+// });
 app.use(cookie_parser());
+
+app.get("/socket_test", (req, res)=> {
+    io.on("connection", (socket) => {
+        console.log(`socket connected: ${socket.id}`);
+    });
+    
+    res.status(200).send("Connection Done");
+});
 
 app.use("/user", user);
 app.use("/video", videos );
@@ -32,4 +45,4 @@ process.on("SIGINT", async() => {
     }
 })
 
-app.listen(port, () => console.log("Server is listening on port: %s", port));
+server.listen(port, () => console.log("Server is listening on port: %s", port));
